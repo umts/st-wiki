@@ -332,4 +332,4 @@ Install a new MediaWiki first, then use the conversion script which will
 output SQL statements; direct these to a file and then run that into your
 database.
 
-You will have to rebuild the links tables etc after importing. . .
+You will have to rebuild the links tables etc after importing.^.
