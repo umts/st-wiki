@@ -1653,7 +1653,7 @@ if ( \$wgCommandLineMode ) {
 
 ## To enable image uploads, make sure the 'images' directory
 ## is writable, then set this to true:
-\$wgEnableUploads       = false;
+\$wgEnableUploads       = true;
 {$magic}\$wgUseImageMagick = true;
 {$magic}\$wgImageMagickConvertCommand = \"{$convert}\";
 
