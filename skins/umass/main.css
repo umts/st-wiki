@@ -929,6 +929,20 @@ li#ca-watch, li#ca-unwatch, li#ca-varlang-0, li#ca-print {
 	margin-right: 2em;
 }
 
+#umass-footer p{
+	text-align: center;
+}
+
+#umass-footer a:hover {
+border-color:#881111;
+}
+
+#umass-footer a {
+border-bottom:1px solid #BBBBBB;
+color:#881111;
+text-decoration:none;
+}
+
 /* js pref toc */
 #preftoc {
 	margin: 0;
