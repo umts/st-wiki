@@ -1,8 +1,12 @@
 <?php
-/** Danish (Dansk)
-  *
-  * @addtogroup Language
-  * @comment Deprecated code. Falls back to 'dk'.
-  */
+/** Danish
+ *
+ * See MessagesQqq.php for message documentation incl. usage of parameters
+ * To improve a translation please visit http://translatewiki.net
+ *
+ * @ingroup Language
+ * @file
+ * @comment Deprecated code. Falls back to 'dk'.
+ */
 
 $fallback = 'da';

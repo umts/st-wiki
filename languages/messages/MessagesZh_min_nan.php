@@ -1,10 +1,13 @@
 <?php
-/** Min Nan Chinese (Bân-lâm-gú)
+/** Min Nan (Bân-lâm-gú/閩南話)
  *
- * @addtogroup Language
+ * See MessagesQqq.php for message documentation incl. usage of parameters
+ * To improve a translation please visit http://translatewiki.net
+ *
+ * @ingroup Language
+ * @file
  *
  */
 
 # Inherit everything for now
 $fallback = 'nan';
-

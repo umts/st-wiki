@@ -1,10 +1,14 @@
 <?php
 /** Tigrinya (ትግርኛ)
  *
- * @addtogroup Language
+ * See MessagesQqq.php for message documentation incl. usage of parameters
+ * To improve a translation please visit http://translatewiki.net
+ *
+ * @ingroup Language
+ * @file
  *
  * @author Blake
- * @author Niklas Laxström
+ * @author Node ue
  * @author Teak
  */
 
@@ -20,6 +24,13 @@ $messages = array(
 'thursday'  => 'ኃሙስ',
 'friday'    => 'ዓርቢ',
 'saturday'  => 'ቀዳም',
+'sun'       => 'ሰንበ',
+'mon'       => 'ሰኑይ',
+'tue'       => 'ሠሉስ',
+'wed'       => 'ረቡዕ',
+'thu'       => 'ኃሙስ',
+'fri'       => 'ዓርቢ',
+'sat'       => 'ቀዳም',
 'january'   => 'ትሪ',
 'february'  => 'ለካቲት',
 'march'     => 'መጋቢት',
@@ -32,11 +43,19 @@ $messages = array(
 'october'   => 'ጥቅምቲ',
 'november'  => 'ኅዳር',
 'december'  => 'ታኅሣሥ',
+'jan'       => 'ጃንዩ',
+'feb'       => 'ፌብሩ',
+'mar'       => 'ማርች',
+'apr'       => 'ኤፕረ',
+'may'       => 'ሜይ',
+'jun'       => 'ጁን',
 
-'about'         => 'ብዛዕባ ብጠቅላላ',
+'about'  => 'ብዛዕባ ብጠቅላላ',
+'mypage' => 'ፅሑፈይ',
+
+# Cologne Blue skin
 'qbpageoptions' => 'ፅሑፍዚ',
 'qbmyoptions'   => 'ፅሑፋተይ',
-'mypage'        => 'ፅሑፈይ',
 
 'help'          => 'ፍንጪ',
 'search'        => 'ድሉይ',
@@ -47,8 +66,9 @@ $messages = array(
 'jumptosearch'  => 'ድሉይ',
 
 # All link text and link target definitions of links into project namespace that get used by other message strings, with the exception of user group pages (see grouppage) and the disambiguation template definition (see disambiguations).
-'aboutsite' => 'ብዛዕባ ዊኪፒዲያ ብጠቅላላ',
-'mainpage'  => 'መበገሲ ገጽ',
+'aboutsite'            => 'ብዛዕባ ዊኪፒዲያ ብጠቅላላ',
+'mainpage'             => 'መበገሲ ገጽ',
+'mainpage-description' => 'መበገሲ ገጽ',
 
 # Short words for each namespace, by default used in the namespace tab in monobook
 'nstab-main'    => 'ፅሑፍ',
@@ -61,9 +81,6 @@ $messages = array(
 
 # Login and logout pages
 'yourname'           => 'ናይ ኣባል ሽም:',
-'youremail'          => 'ኢ-መይል:',
-'yourlanguage'       => 'ቋንቋ:',
-'email'              => 'ኢ-መይል',
 'loginlanguagelabel' => 'ቋንቋ: $1',
 
 # Edit pages
@@ -75,8 +92,8 @@ $messages = array(
 'historysize' => '($1 ባይታት)',
 
 # Search results
-'prevn'       => 'ናይ ቀደም $1',
-'nextn'       => 'ዝቕጽል $1',
+'prevn'       => 'ናይ ቀደም {{PLURAL:$1|$1}}',
+'nextn'       => 'ዝቕጽል {{PLURAL:$1|$1}}',
 'powersearch' => 'ድሉይ',
 
 # Preferences page
@@ -85,7 +102,10 @@ $messages = array(
 'saveprefs'         => 'ኣቐምጥ',
 'searchresultshead' => 'ድሉይ',
 'savedprefs'        => 'ዘቕረብኩሞ መርኣይ ብትክክል ተቀሚጡ ኣሎ።',
-'files'             => 'ምስልታት',
+'prefs-files'       => 'ምስልታት',
+'youremail'         => 'ኢ-መይል:',
+'yourlanguage'      => 'ቋንቋ:',
+'email'             => 'ኢ-መይል',
 
 # Groups
 'group'       => 'ብሓበር:',
@@ -100,12 +120,14 @@ $messages = array(
 # Upload
 'savefile' => 'ምስሊ ኣቐምጥ',
 
-# Image list
-'imagelist'      => 'ምስልታት',
-'ilsubmit'       => 'ድሉይ',
+# Special:ListFiles
 'imgfile'        => 'ምስሊ',
-'imagelist_name' => 'ሽም',
-'imagelist_user' => 'ኣባል',
+'listfiles'      => 'ምስልታት',
+'listfiles_name' => 'ሽም',
+'listfiles_user' => 'ኣባል',
+
+# File description page
+'file-anchor-link' => 'ምስሊ',
 
 # Miscellaneous special pages
 'nbytes'            => '$1 {{PLURAL:$1|ባይት|ባይታት}}',
@@ -117,13 +139,11 @@ $messages = array(
 # Book sources
 'booksources-go' => 'ኪድ',
 
-'alphaindexline' => '$1 ናብ $2',
-
 # Special:Log
 'specialloguserlabel' => 'ኣባል:',
-'log-search-submit'   => 'ኪድ',
 
-# Special:Allpages
+# Special:AllPages
+'alphaindexline' => '$1 ናብ $2',
 'nextpage'       => 'ዝቕጽል ፅሑፍ ($1)',
 'prevpage'       => 'ናይ ቀደም ፅሑፍ ($1)',
 'allarticles'    => 'ኵሎም ፅሑፋት',
@@ -134,7 +154,7 @@ $messages = array(
 # Watchlist
 'watchlistfor' => "(ን'''$1''')",
 
-# Delete/protect/revert
+# Protect
 'pagesize' => '(ባይታት)',
 
 # Undelete
@@ -153,6 +173,9 @@ $messages = array(
 
 # Tooltip help for the actions
 'tooltip-pt-preferences' => 'ናተይ ኣማረጽቲ',
+
+# Special:NewFiles
+'ilsubmit' => 'ድሉይ',
 
 # Metadata
 'metadata' => 'ሜታዳታ',
