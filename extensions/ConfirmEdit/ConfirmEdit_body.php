@@ -15,12 +15,16 @@ class ConfirmEditHooks {
 		return $wgCaptcha;
 	}
 
-	static function confirmEdit( &$editPage, $newtext, $section ) {
+	static function confirmEdit( $editPage, $newtext, $section ) {
 		return self::getInstance()->confirmEdit( $editPage, $newtext, $section );
 	}
 
-	static function confirmEditMerged( &$editPage, $newtext ) {
+	static function confirmEditMerged( $editPage, $newtext ) {
 		return self::getInstance()->confirmEditMerged( $editPage, $newtext );
+	}
+
+	static function confirmEditAPI( $editPage, $newtext, &$resultArr ) {
+		return self::getInstance()->confirmEditAPI( $editPage, $newtext, $resultArr );
 	}
 
 	static function injectUserCreate( &$template ) {
@@ -50,7 +54,8 @@ class CaptchaSpecialPage extends UnlistedSpecialPage {
 		$instance = ConfirmEditHooks::getInstance();
 		switch( $par ) {
 		case "image":
-			return $instance->showImage();
+			if ( method_exists( $instance, 'showImage' ) )
+				return $instance->showImage();
 		case "help":
 		default:
 			return $instance->showHelp();
@@ -58,13 +63,31 @@ class CaptchaSpecialPage extends UnlistedSpecialPage {
 	}
 }
 
-
 class SimpleCaptcha {
 	function SimpleCaptcha() {
 		global $wgCaptchaStorageClass;
 		$this->storage = new $wgCaptchaStorageClass;
 	}
-	
+
+	function getCaptcha() {
+		$a = mt_rand( 0, 100 );
+		$b = mt_rand( 0, 10 );
+		$op = mt_rand( 0, 1 ) ? '+' : '-';
+
+		$test = "$a $op $b";
+		$answer = ( $op == '+' ) ? ( $a + $b ) : ( $a - $b );
+		return array( 'question' => $test, 'answer' => $answer );
+	}
+
+	function addCaptchaAPI( &$resultArr ) {
+		$captcha = $this->getCaptcha();
+		$index = $this->storeCaptcha( $captcha );
+		$resultArr['captcha']['type'] = 'simple';
+		$resultArr['captcha']['mime'] = 'text/plain';
+		$resultArr['captcha']['id'] = $index;
+		$resultArr['captcha']['question'] = $captcha['question'];
+	}
+
 	/**
 	 * Insert a captcha prompt into the edit form.
 	 * This sample implementation generates a simple arithmetic operation;
@@ -75,22 +98,16 @@ class SimpleCaptcha {
 	 * @return string HTML
 	 */
 	function getForm() {
-		$a = mt_rand(0, 100);
-		$b = mt_rand(0, 10);
-		$op = mt_rand(0, 1) ? '+' : '-';
+		$captcha = $this->getCaptcha();
+		$index = $this->storeCaptcha( $captcha );
 
-		$test = "$a $op $b";
-		$answer = ($op == '+') ? ($a + $b) : ($a - $b);
-
-		$index = $this->storeCaptcha( array( 'answer' => $answer ) );
-
-		return "<p><label for=\"wpCaptchaWord\">$test</label> = " .
-			wfElement( 'input', array(
+		return "<p><label for=\"wpCaptchaWord\">{$captcha['question']}</label> = " .
+			Xml::element( 'input', array(
 				'name' => 'wpCaptchaWord',
 				'id'   => 'wpCaptchaWord',
 				'tabindex' => 1 ) ) . // tab in before the edit textarea
 			"</p>\n" .
-			wfElement( 'input', array(
+			Xml::element( 'input', array(
 				'type'  => 'hidden',
 				'name'  => 'wpCaptchaId',
 				'id'    => 'wpCaptchaId',
@@ -128,8 +145,12 @@ class SimpleCaptcha {
 	 * @return bool true to keep running callbacks
 	 */
 	function injectUserCreate( &$template ) {
-		global $wgCaptchaTriggers, $wgOut;
-		if( $wgCaptchaTriggers['createaccount'] ) {
+		global $wgCaptchaTriggers, $wgOut, $wgUser;
+		if ( $wgCaptchaTriggers['createaccount'] ) {
+			if ( $wgUser->isAllowed( 'skipcaptcha' ) ) {
+				wfDebug( "ConfirmEdit: user group allows skipping captcha on account creation\n" );
+				return true;
+			}
 			$template->set( 'header',
 				"<div class='captcha'>" .
 				$wgOut->parse( $this->getMessage( 'createaccount' ) ) .
@@ -147,7 +168,7 @@ class SimpleCaptcha {
 	 * @return bool true to keep running callbacks
 	 */
 	function injectUserLogin( &$template ) {
-		if( $this->isBadLoginTriggered() ) {
+		if ( $this->isBadLoginTriggered() ) {
 			global $wgOut;
 			$template->set( 'header',
 				"<div class='captcha'>" .
@@ -157,7 +178,7 @@ class SimpleCaptcha {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * When a bad login attempt is made, increment an expiring counter
 	 * in the memcache cloud. Later checks for this may trigger a
@@ -169,17 +190,17 @@ class SimpleCaptcha {
 	 */
 	function triggerUserLogin( $user, $password, $retval ) {
 		global $wgCaptchaTriggers, $wgCaptchaBadLoginExpiration, $wgMemc;
-		if( $retval == LoginForm::WRONG_PASS && $wgCaptchaTriggers['badlogin'] ) {
+		if ( $retval == LoginForm::WRONG_PASS && $wgCaptchaTriggers['badlogin'] ) {
 			$key = $this->badLoginKey();
 			$count = $wgMemc->get( $key );
-			if( !$count ) {
+			if ( !$count ) {
 				$wgMemc->add( $key, 0, $wgCaptchaBadLoginExpiration );
 			}
 			$count = $wgMemc->incr( $key );
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Check if a bad login has already been registered for this
 	 * IP address. If so, require a captcha.
@@ -187,10 +208,26 @@ class SimpleCaptcha {
 	 * @access private
 	 */
 	function isBadLoginTriggered() {
-		global $wgMemc;
-		return intval( $wgMemc->get( $this->badLoginKey() ) ) > 0;
+		global $wgMemc, $wgCaptchaBadLoginAttempts;
+		return intval( $wgMemc->get( $this->badLoginKey() ) ) >= $wgCaptchaBadLoginAttempts;
 	}
-	
+
+	/**
+	 * Check if the IP is allowed to skip captchas
+	 */
+	function isIPWhitelisted() {
+		global $wgCaptchaWhitelistIP;
+		if ( $wgCaptchaWhitelistIP ) {
+			$ip = wfGetIp();
+			foreach ( $wgCaptchaWhitelistIP as $range ) {
+				if ( IP::isInRange( $ip, $range ) ) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Internal cache key for badlogin checks.
 	 * @return string
@@ -199,19 +236,19 @@ class SimpleCaptcha {
 	function badLoginKey() {
 		return wfMemcKey( 'captcha', 'badlogin', 'ip', wfGetIP() );
 	}
-	
+
 	/**
 	 * Check if the submitted form matches the captcha session data provided
 	 * by the plugin when the form was generated.
 	 *
 	 * Override this!
 	 *
-	 * @param WebRequest $request
+	 * @param string $answer
 	 * @param array $info
 	 * @return bool
 	 */
-	function keyMatch( $request, $info ) {
-		return $request->getVal( 'wpCaptchaWord' ) == $info['answer'];
+	function keyMatch( $answer, $info ) {
+		return $answer == $info['answer'];
 	}
 
 	// ----------------------------------
@@ -221,15 +258,14 @@ class SimpleCaptcha {
 	 * @param string $action (edit/create/addurl...)
 	 * @return bool true if action triggers captcha on editPage's namespace
 	 */
-	function captchaTriggers( &$editPage, $action) {
-		global $wgCaptchaTriggers, $wgCaptchaTriggersOnNamespace;	
-		//Special config for this NS?
-		if (isset( $wgCaptchaTriggersOnNamespace[$editPage->mTitle->getNamespace()][$action] ) )
+	function captchaTriggers( &$editPage, $action ) {
+		global $wgCaptchaTriggers, $wgCaptchaTriggersOnNamespace;
+		// Special config for this NS?
+		if ( isset( $wgCaptchaTriggersOnNamespace[$editPage->mTitle->getNamespace()][$action] ) )
 			return $wgCaptchaTriggersOnNamespace[$editPage->mTitle->getNamespace()][$action];
 
-		return ( !empty( $wgCaptchaTriggers[$action] ) ); //Default
+		return ( !empty( $wgCaptchaTriggers[$action] ) ); // Default
 	}
-
 
 	/**
 	 * @param EditPage $editPage
@@ -242,29 +278,22 @@ class SimpleCaptcha {
 		$title = $editPage->mArticle->getTitle();
 
 		global $wgUser;
-		if( $wgUser->isAllowed( 'skipcaptcha' ) ) {
+		if ( $wgUser->isAllowed( 'skipcaptcha' ) ) {
 			wfDebug( "ConfirmEdit: user group allows skipping captcha\n" );
 			return false;
 		}
-		global $wgCaptchaWhitelistIP;
-		if( !empty( $wgCaptchaWhitelistIP ) ) {
-			$ip = wfGetIp();
-			foreach ( $wgCaptchaWhitelistIP as $range ) {
-				if ( IP::isInRange( $ip, $range ) ) {
-					return false;
-				}
-			}
-		}
+		if ( $this->isIPWhitelisted() )
+			return false;
 
 
 		global $wgEmailAuthentication, $ceAllowConfirmedEmail;
-		if( $wgEmailAuthentication && $ceAllowConfirmedEmail &&
+		if ( $wgEmailAuthentication && $ceAllowConfirmedEmail &&
 			$wgUser->isEmailConfirmed() ) {
 			wfDebug( "ConfirmEdit: user has confirmed mail, skipping captcha\n" );
 			return false;
 		}
 
-		if( $this->captchaTriggers( $editPage, 'edit' ) ) {
+		if ( $this->captchaTriggers( $editPage, 'edit' ) ) {
 			// Check on all edits
 			global $wgUser;
 			$this->trigger = sprintf( "edit trigger by '%s' at [[%s]]",
@@ -275,8 +304,8 @@ class SimpleCaptcha {
 			return true;
 		}
 
-		if( $this->captchaTriggers( $editPage, 'create' )  && !$editPage->mTitle->exists() ) {
-			//Check if creating a page
+		if ( $this->captchaTriggers( $editPage, 'create' )  && !$editPage->mTitle->exists() ) {
+			// Check if creating a page
 			global $wgUser;
 			$this->trigger = sprintf( "Create trigger by '%s' at [[%s]]",
 				$wgUser->getName(),
@@ -286,7 +315,7 @@ class SimpleCaptcha {
 			return true;
 		}
 
-		if( $this->captchaTriggers( $editPage, 'addurl' ) ) {
+		if ( $this->captchaTriggers( $editPage, 'addurl' ) ) {
 			// Only check edits that add URLs
 			if ( $merged ) {
 				// Get links from the database
@@ -297,15 +326,15 @@ class SimpleCaptcha {
 			} else {
 				// Get link changes in the slowest way known to man
 				$oldtext = $this->loadText( $editPage, $section );
-				$oldLinks = $this->findLinks( $oldtext );
-				$newLinks = $this->findLinks( $newtext );
+				$oldLinks = $this->findLinks( $editPage, $oldtext );
+				$newLinks = $this->findLinks( $editPage, $newtext );
 			}
 
 			$unknownLinks = array_filter( $newLinks, array( &$this, 'filterLink' ) );
 			$addedLinks = array_diff( $unknownLinks, $oldLinks );
 			$numLinks = count( $addedLinks );
 
-			if( $numLinks > 0 ) {
+			if ( $numLinks > 0 ) {
 				global $wgUser;
 				$this->trigger = sprintf( "%dx url trigger by '%s' at [[%s]]: %s",
 					$numLinks,
@@ -318,20 +347,20 @@ class SimpleCaptcha {
 		}
 
 		global $wgCaptchaRegexes;
-		if( !empty( $wgCaptchaRegexes ) ) {
+		if ( $wgCaptchaRegexes ) {
 			// Custom regex checks
 			$oldtext = $this->loadText( $editPage, $section );
 
-			foreach( $wgCaptchaRegexes as $regex ) {
+			foreach ( $wgCaptchaRegexes as $regex ) {
 				$newMatches = array();
-				if( preg_match_all( $regex, $newtext, $newMatches ) ) {
+				if ( preg_match_all( $regex, $newtext, $newMatches ) ) {
 					$oldMatches = array();
 					preg_match_all( $regex, $oldtext, $oldMatches );
 
 					$addedMatches = array_diff( $newMatches[0], $oldMatches[0] );
 
 					$numHits = count( $addedMatches );
-					if( $numHits > 0 ) {
+					if ( $numHits > 0 ) {
 						global $wgUser;
 						$this->trigger = sprintf( "%dx %s at [[%s]]: %s",
 							$numHits,
@@ -359,7 +388,7 @@ class SimpleCaptcha {
 		global $wgCaptchaWhitelist;
 		$source = wfMsgForContent( 'captcha-addurl-whitelist' );
 
-		$whitelist = wfEmptyMsg( 'captcha-addurl-whitelist', $source ) 
+		$whitelist = wfEmptyMsg( 'captcha-addurl-whitelist', $source )
 			? false
 			: $this->buildRegexes( explode( "\n", $source ) );
 
@@ -388,29 +417,29 @@ class SimpleCaptcha {
 		} else {
 			# Make regex
 			# It's faster using the S modifier even though it will usually only be run once
-			//$regex = 'http://+[a-z0-9_\-.]*(' . implode( '|', $lines ) . ')';
-			//return '/' . str_replace( '/', '\/', preg_replace('|\\\*/|', '/', $regex) ) . '/Si';
+			// $regex = 'http://+[a-z0-9_\-.]*(' . implode( '|', $lines ) . ')';
+			// return '/' . str_replace( '/', '\/', preg_replace('|\\\*/|', '/', $regex) ) . '/Si';
 			$regexes = '';
-			$regexStart = '/http:\/\/+[a-z0-9_\-.]*(';
+			$regexStart = '/^https?:\/\/+[a-z0-9_\-.]*(';
 			$regexEnd = ')/Si';
 			$regexMax = 4096;
 			$build = false;
-			foreach( $lines as $line ) {
+			foreach ( $lines as $line ) {
 				// FIXME: not very robust size check, but should work. :)
-				if( $build === false ) {
+				if ( $build === false ) {
 					$build = $line;
-				} elseif( strlen( $build ) + strlen( $line ) > $regexMax ) {
+				} elseif ( strlen( $build ) + strlen( $line ) > $regexMax ) {
 					$regexes .= $regexStart .
-						str_replace( '/', '\/', preg_replace('|\\\*/|', '/', $build) ) .
+						str_replace( '/', '\/', preg_replace( '|\\\*/|', '/', $build ) ) .
 						$regexEnd;
 					$build = $line;
 				} else {
 					$build .= '|' . $line;
 				}
 			}
-			if( $build !== false ) {
+			if ( $build !== false ) {
 				$regexes .= $regexStart .
-					str_replace( '/', '\/', preg_replace('|\\\*/|', '/', $build) ) .
+					str_replace( '/', '\/', preg_replace( '|\\\*/|', '/', $build ) ) .
 					$regexEnd;
 			}
 			return $regexes;
@@ -421,30 +450,26 @@ class SimpleCaptcha {
 	 * Load external links from the externallinks table
 	 */
 	function getLinksFromTracker( $title ) {
-		$dbr =& wfGetDB( DB_SLAVE );
+		$dbr = wfGetDB( DB_SLAVE );
 		$id = $title->getArticleId(); // should be zero queries
-		$res = $dbr->select( 'externallinks', array( 'el_to' ), 
+		$res = $dbr->select( 'externallinks', array( 'el_to' ),
 			array( 'el_from' => $id ), __METHOD__ );
 		$links = array();
 		while ( $row = $dbr->fetchObject( $res ) ) {
 			$links[] = $row->el_to;
 		}
 		return $links;
-	}		
+	}
 
 	/**
-	 * The main callback run on edit attempts.
-	 * @param EditPage $editPage
-	 * @param string $newtext
-	 * @param string $section
-	 * @param bool true to continue saving, false to abort and show a captcha form
+	 * Backend function for confirmEdit() and confirmEditAPI()
+	 * @return bool false if the CAPTCHA is rejected, true otherwise
 	 */
-	function confirmEdit( &$editPage, $newtext, $section, $merged = false ) {
-		if( $this->shouldCheck( $editPage, $newtext, $section, $merged ) ) {
-			if( $this->passCaptcha() ) {
+	private function doConfirmEdit( $editPage, $newtext, $section, $merged = false ) {
+		if ( $this->shouldCheck( $editPage, $newtext, $section, $merged ) ) {
+			if ( $this->passCaptcha() ) {
 				return true;
 			} else {
-				$editPage->showEditForm( array( &$this, 'editCallback' ) );
 				return false;
 			}
 		} else {
@@ -454,12 +479,42 @@ class SimpleCaptcha {
 	}
 
 	/**
+	 * The main callback run on edit attempts.
+	 * @param EditPage $editPage
+	 * @param string $newtext
+	 * @param string $section
+	 * @param bool $merged
+	 * @return bool true to continue saving, false to abort and show a captcha form
+	 */
+	function confirmEdit( $editPage, $newtext, $section, $merged = false ) {
+		if ( defined( 'MW_API' ) ) {
+			# API mode
+			# The CAPTCHA was already checked and approved
+			return true;
+		}
+		if ( !$this->doConfirmEdit( $editPage, $newtext, $section, $merged ) ) {
+			$editPage->showEditForm( array( &$this, 'editCallback' ) );
+			return false;
+		}
+		return true;
+	}
+
+	/**
 	 * A more efficient edit filter callback based on the text after section merging
 	 * @param EditPage $editPage
 	 * @param string $newtext
 	 */
-	function confirmEditMerged( &$editPage, $newtext ) {
+	function confirmEditMerged( $editPage, $newtext ) {
 		return $this->confirmEdit( $editPage, $newtext, false, true );
+	}
+
+
+	function confirmEditAPI( $editPage, $newtext, &$resultArr ) {
+		if ( !$this->doConfirmEdit( $editPage, $newtext, false, false ) ) {
+			$this->addCaptchaAPI( $resultArr );
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -469,17 +524,24 @@ class SimpleCaptcha {
 	 * @return bool true to continue, false to abort user creation
 	 */
 	function confirmUserCreate( $u, &$message ) {
-		global $wgCaptchaTriggers;
-		if( $wgCaptchaTriggers['createaccount'] ) {
+		global $wgCaptchaTriggers, $wgUser;
+		if ( $wgCaptchaTriggers['createaccount'] ) {
+			if ( $wgUser->isAllowed( 'skipcaptcha' ) ) {
+				wfDebug( "ConfirmEdit: user group allows skipping captcha on account creation\n" );
+				return true;
+			}
+			if ( $this->isIPWhitelisted() )
+				return true;
+
 			$this->trigger = "new account '" . $u->getName() . "'";
-			if( !$this->passCaptcha() ) {
+			if ( !$this->passCaptcha() ) {
 				$message = wfMsg( 'captcha-createaccount-fail' );
 				return false;
 			}
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Hook for user login form submissions.
 	 * @param User $u
@@ -487,9 +549,12 @@ class SimpleCaptcha {
 	 * @return bool true to continue, false to abort user creation
 	 */
 	function confirmUserLogin( $u, $pass, &$retval ) {
-		if( $this->isBadLoginTriggered() ) {
+		if ( $this->isBadLoginTriggered() ) {
+			if ( $this->isIPWhitelisted() )
+				return true;
+
 			$this->trigger = "post-badlogin login '" . $u->getName() . "'";
-			if( !$this->passCaptcha() ) {
+			if ( !$this->passCaptcha() ) {
 				$message = wfMsg( 'captcha-badlogin-fail' );
 				// Emulate a bad-password return to confuse the shit out of attackers
 				$retval = LoginForm::WRONG_PASS;
@@ -506,9 +571,9 @@ class SimpleCaptcha {
 	 */
 	function passCaptcha() {
 		$info = $this->retrieveCaptcha();
-		if( $info ) {
+		if ( $info ) {
 			global $wgRequest;
-			if( $this->keyMatch( $wgRequest, $info ) ) {
+			if ( $this->keyMatch( $wgRequest->getVal( 'wpCaptchaWord' ), $info ) ) {
 				$this->log( "passed" );
 				$this->clearCaptcha( $info );
 				return true;
@@ -543,7 +608,7 @@ class SimpleCaptcha {
 	 * @return string captcha ID key
 	 */
 	function storeCaptcha( $info ) {
-		if( !isset( $info['index'] ) ) {
+		if ( !isset( $info['index'] ) ) {
 			// Assign random index if we're not udpating
 			$info['index'] = strval( mt_rand() );
 		}
@@ -578,11 +643,11 @@ class SimpleCaptcha {
 	 */
 	function loadText( $editPage, $section ) {
 		$rev = Revision::newFromTitle( $editPage->mTitle );
-		if( is_null( $rev ) ) {
+		if ( is_null( $rev ) ) {
 			return "";
 		} else {
 			$text = $rev->getText();
-			if( $section != '' ) {
+			if ( $section != '' ) {
 				return Article::getSection( $text, $section );
 			} else {
 				return $text;
@@ -595,12 +660,12 @@ class SimpleCaptcha {
 	 * @param string $text
 	 * @return array of strings
 	 */
-	function findLinks( $text ) {
-		global $wgParser, $wgTitle, $wgUser;
+	function findLinks( &$editpage, $text ) {
+		global $wgParser, $wgUser;
 
 		$options = new ParserOptions();
-		$text = $wgParser->preSaveTransform( $text, $wgTitle, $wgUser, $options );
-		$out = $wgParser->parse( $text, $wgTitle, $options );
+		$text = $wgParser->preSaveTransform( $text, $editpage->mTitle, $wgUser, $options );
+		$out = $wgParser->parse( $text, $editpage->mTitle, $options );
 
 		return array_keys( $out->getExternalLinks() );
 	}
@@ -616,22 +681,21 @@ class SimpleCaptcha {
 			$wgOut->addWikiText( wfMsg( 'captchahelp-cookies-needed' ) );
 		}
 	}
-
 }
 
 class CaptchaSessionStore {
 	function store( $index, $info ) {
 		$_SESSION['captcha' . $info['index']] = $info;
 	}
-	
+
 	function retrieve( $index ) {
-		if( isset( $_SESSION['captcha' . $index] ) ) {
+		if ( isset( $_SESSION['captcha' . $index] ) ) {
 			return $_SESSION['captcha' . $index];
 		} else {
 			return false;
 		}
 	}
-	
+
 	function clear( $index ) {
 		unset( $_SESSION['captcha' . $index] );
 	}
@@ -651,13 +715,13 @@ class CaptchaCacheStore {
 	function retrieve( $index ) {
 		global $wgMemc;
 		$info = $wgMemc->get( wfMemcKey( 'captcha', $index ) );
-		if( $info ) {
+		if ( $info ) {
 			return $info;
 		} else {
 			return false;
 		}
 	}
-	
+
 	function clear( $index ) {
 		global $wgMemc;
 		$wgMemc->delete( wfMemcKey( 'captcha', $index ) );
@@ -667,4 +731,3 @@ class CaptchaCacheStore {
 		return false;
 	}
 }
-
