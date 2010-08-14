@@ -599,7 +599,6 @@ table.rimage {
 	padding: 0 1em 0 .5em;
 	display: inline;
 	height: 1em;
-	text-transform: lowercase;
 	font-size: 91%;
 	font-weight: normal;
 	white-space: nowrap;

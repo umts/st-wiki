@@ -314,7 +314,7 @@ if($this->data['copyrightico']) { ?>
 				<li id="t-ispermalink"<?php echo $this->skin->tooltip('t-ispermalink') ?>><?php $this->msg('permalink') ?></li><?php
 		}
 
-		wfRunHooks( 'MonoBookTemplateToolboxEnd', array( &$this ) );
+		wfRunHooks( 'UMassTemplateToolboxEnd', array( &$this ) );
 		wfRunHooks( 'SkinTemplateToolboxEnd', array( &$this ) );
 ?>
 			</ul>

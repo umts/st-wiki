@@ -639,6 +639,11 @@ class SkinTemplate extends Skin {
 					'href' => self::makeSpecialUrl( 'Userlogin', $returnto ),
 					'active' => $title->isSpecial( 'Userlogin' )
 				);
+				$personal_urls['request'] = array(
+					'text' => 'Request account',
+					'href' => self::makeSpecialUrl( 'RequestAccount', $returnto ),
+					'active' => $title->isSpecial( 'RequestAccount' )
+				);
 			}
 		}
 
