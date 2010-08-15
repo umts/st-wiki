@@ -19,6 +19,7 @@ $wgExtensionCredits['specialpage'][] = array(
 
 $wgAutoloadClasses['PasswordReset'] = dirname(__FILE__) . '/PasswordReset_body.php';
 $wgSpecialPages['PasswordReset'] = 'PasswordReset';
+$wgSpecialPageGroups['PasswordReset'] = 'users';
 
 if ( version_compare( $wgVersion, '1.10.0', '<' ) ) {
     //Extension designed for 1.10.0+, but will work on some older versions
