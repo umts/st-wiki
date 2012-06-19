@@ -929,6 +929,7 @@ li#ca-watch, li#ca-unwatch, li#ca-varlang-0, li#ca-print {
 }
 
 #umass-footer p{
+  font-size: 90%;
 	text-align: center;
 }
 
@@ -940,6 +941,13 @@ border-color:#881111;
 border-bottom:1px solid #BBBBBB;
 color:#881111;
 text-decoration:none;
+}
+
+#umass-footer #seal {
+  height: 52px;
+  width: 52px;
+  margin: 0 auto;
+  background-image: url("seal.jpg");
 }
 
 /* js pref toc */

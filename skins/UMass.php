@@ -215,10 +215,9 @@ if($this->data['copyrightico']) { ?>
 ?>
 </div>
 <div id='umass-footer'>
-<p align="center">This page is maintained by <a href="http://umass.edu/transit/">UMass Transit Service</a>.</p>
-<p align="center">© 2010 <a href="http://umass.edu/">University of Massachusetts Amherst</a> <span>•</span> <a href="http://umass.edu/umhome/policies/">Site Policies</a></p>
-<p align="center"><a href=""><img width="52" height="52" border="0" align="center" alt="UMass seal" src="http://umass.edu/umhome/images/id_footer.gif"/></a></p>
-<p align="center"> </p>
+<p>This page is maintained by <a href="http://umass.edu/transit/">UMass Transit Service</a>.</p>
+<p>© 2010 <a href="http://umass.edu/">University of Massachusetts Amherst</a> <span>•</span> <a href="http://umass.edu/umhome/policies/">Site Policies</a></p>
+<div id="seal"><!-- background set in css --></div>
 </div>
 </div>
 <?php $this->html('bottomscripts'); /* JS call to runBodyOnloadHook */ ?>
