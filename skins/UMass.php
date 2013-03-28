@@ -74,6 +74,9 @@ class UMassTemplate extends QuickTemplate {
 <!-- Begin UMass Amherst top banner -->
 
 <div id="topbanner" style="background-color: rgb(136, 17, 17); text-align: right; padding: 8px 15px;">
+<!-- Official UMass Sesquicentennial Logo -->
+<a style="float: left; margin: -4px 6px; width: 58px; height: 34px; " title="150th Anniversary" href="http://umass.edu/150"><img alt="UMass Sesquicentennial" src="http://umass.edu/umhome/identity/150/150.png"></a>
+<!-- End Official UMass Sesquicentennial Logo -->
 <a href="http://umass.edu/"><img id="banner_wordmark" src="http://umass.edu/umhome/identity/top_banner_06/informal_fff_on_811.gif" alt="UMass Amherst" style="float: left; width: 146px; border: 0pt none;" height="22" width="146"></a>
 <form action="http://googlebox.oit.umass.edu/search" method="get" name="gs" onsubmit="if (this.q.value=='Search UMass Amherst') return false;" style="margin: 0pt; padding: 0pt;">
 <div><label for="q"><input style="font-size: 11px; font-family: Verdana,sans-serif; padding-left: 2px;" size="22" name="q" id="q" value="Search UMass Amherst" onfocus="if (this.value=='Search UMass Amherst') this.value=''" onblur="if (this.value=='') this.value='Search UMass Amherst'" type="text"></label>
