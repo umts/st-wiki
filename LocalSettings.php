@@ -292,7 +292,8 @@ $wgGroupPermissions['bureaucrat' ]['requestips'] 	= true;
 //To enable Captchas/Confirm Edit extensions. -1/3/08 LB2
 //Keys are in the Sensitive file.
 require_once( "$IP/extensions/ConfirmEdit/ConfirmEdit.php" );
-require_once( "$IP/extensions/recaptcha/ReCaptcha.php" );
+require_once("$IP/extensions/ConfirmEdit/ReCaptcha.php");
+$wgCaptchaClass = 'ReCaptcha';
 
 //Newuserlog extension -1/3/08 -LB2
 require_once("$IP/extensions/Newuserlog/Newuserlog.php");
