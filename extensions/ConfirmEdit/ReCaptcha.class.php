@@ -36,7 +36,7 @@ class ReCaptcha extends SimpleCaptcha {
 			return false;
 		}
 
-		$ip = $wgRequest->getIP();
+		$ip = wfGetIP();
 
 		$recaptcha_response = recaptcha_check_answer(
 			$wgReCaptchaPrivateKey,
