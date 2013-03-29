@@ -14,7 +14,7 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 	exit;
 }
 
-$dir = __DIR__;
+$dir = dirname(__FILE__);
 require_once $dir . '/ConfirmEdit.php';
 $wgCaptchaClass = 'ReCaptcha';
 
