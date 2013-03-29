@@ -1,5 +1,5 @@
 set :application, "st-wiki"
-set :repository,  "git@transit-dev.admin.umass.edu:/st-wiki/st-wiki.git"
+set :repository,  "git@github.com:umts/st-wiki.git"
 
 set :scm, :git
 
@@ -17,7 +17,8 @@ default_run_options[:pty] = true
 
 set :shared_children, ["images"]
 
-after "deploy:setup", "deploy:permissions"
+after "deploy:setup", "deploy:permissions", :dbconfig
+after "deploy:update_code", "dbconfig:symlink"
 
 namespace :deploy do
   desc <<-DESC
@@ -55,5 +56,18 @@ namespace :deploy do
       end
       run "ln -s #{shared_path}/#{d.split('/').last} #{latest_release}/#{d}"
     end
+  end
+end
+
+namespace :dbconfig do
+  desc "Create include file in shared path"
+  task :default do
+    secret = `openssl enc -d -aes-256-cbc -in Sensitive.php.aes`
+    put secret, "#{shared_path}/Sensitive.php"
+  end
+
+  desc "Make symlink for include file"
+  task :symlink do
+    run "#{try_sudo} ln -nfs #{shared_path}/Sensitive.php #{release_path}/Sensitive.php"
   end
 end
