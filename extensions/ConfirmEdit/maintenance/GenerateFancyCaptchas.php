@@ -73,7 +73,7 @@ class GenerateFancyCaptchas extends Maintenance {
 		$e = null; // exception
 		try {
 			$cmd = sprintf( "python %s --key %s --output %s --count %s --dirs %s",
-				wfEscapeShellArg( __DIR__ . '/../captcha.py' ),
+				wfEscapeShellArg( dirname(__FILE__) . '/../captcha.py' ),
 				wfEscapeShellArg( $wgCaptchaSecret ),
 				wfEscapeShellArg( $tmpDir ),
 				wfEscapeShellArg( $countGen ),
