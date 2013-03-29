@@ -268,95 +268,9 @@ $wgShowIPinHeader = false;
 //Added to support additional file types - adam 2007.01.18
 $wgFileExtensions = array( 'png', 'gif', 'emf', 'wmf', 'jpg', 'jpeg', 'pdf', 'svg');
 
-//Included to support a function defined in newer versions of WM. -LB2 2008.1.3
-/*****************************************************************************
- *  Extensions 
- */
-
-/**
- * A list of callback functions which are called once MediaWiki is fully initialised
- */
-$wgExtensionFunctions = array();
-
-/**
- * Extension functions for initialisation of skins. This is called somewhat earlier 
- * than $wgExtensionFunctions.
- */
-$wgSkinExtensionFunctions = array();
-
-/**
- * Extension messages files
- * Associative array mapping extension name to the filename where messages can be found.
- * The file must create a variable called $messages.
- * When the messages are needed, the extension should call wfLoadExtensionMessages().
- *
- * Example: 
- *    $wgExtensionMessagesFiles['ConfirmEdit'] = dirname(__FILE__).'/ConfirmEdit.i18n.php';
- *
- */
-$wgExtensionMessagesFiles = array();
-
-/**
- * Parser output hooks.
- * This is an associative array where the key is an extension-defined tag
- * (typically the extension name), and the value is a PHP callback.
- * These will be called as an OutputPageParserOutput hook, if the relevant
- * tag has been registered with the parser output object.
- *
- * Registration is done with $pout->addOutputHook( $tag, $data ). 
- *
- * The callback has the form:
- *    function outputHook( $outputPage, $parserOutput, $data ) { ... }
- */
-$wgParserOutputHooks = array();
-
-/**
- * List of valid skin names.
- * The key should be the name in all lower case, the value should be a display name.
- * The default skins will be added later, by Skin::getSkinNames(). Use 
- * Skin::getSkinNames() as an accessor if you wish to have access to the full list.
- */
-$wgValidSkinNames = array();
-
-/**
- * Special page list.
- * See the top of SpecialPage.php for documentation.
- */
-$wgSpecialPages = array(); 
-
-/**
- * Array mapping class names to filenames, for autoloading.
- */
-$wgAutoloadClasses = array();
-
-/**
- * An array of extension types and inside that their names, versions, authors
- * and urls, note that the version and url key can be omitted.
- *
- * <code>
- * $wgExtensionCredits[$type][] = array(
- *     'name' => 'Example extension',
- *      'version' => 1.9,
- *    'author' => 'Foo Barstein',
- *    'url' => 'http://wwww.example.com/Example%20Extension/',
- * );
- * </code>
- *
- * Where $type is 'specialpage', 'parserhook', or 'other'.
- */
-$wgExtensionCredits = array();
-/*
- * end extensions
- ******************************************************************************/
-
-
-//Included to  support Cite and SpecialCite extensions. Will be active after some tinkering. - LB2 2007.12.30
-
 require_once( "$IP/extensions/WhoIsWatching/SpecialWhoIsWatching.php" );
 $wgPageShowWatchingUsers = true;
 
-require_once( $IP.'/extensions/ExtensionFunctions.php' );
-require_once $IP.'/extensions/ExtensionLoader.php';
 require_once $IP.'/extensions/cite/Cite.php' ;	
 require_once( $IP.'/extensions/cite/SpecialCite.php' );
 require_once( "$IP/extensions/ParserFunctions/ParserFunctions.php" );
