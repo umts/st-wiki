@@ -36,8 +36,8 @@ $wgSitename         = "Umass Transit ST Wiki";
 
 ## The URL base path to the directory containing the wiki;
 ## defaults for all runtime URL paths are based off of this.
-$wgScriptPath = "/st-wiki-direct";         # Path to the actual files. This should already be there
-$wgArticlePath = "/st-wiki/$1";  # Virtual path. This directory MUST be different from the one used in $wgScriptPath
+$wgScriptPath = "/direct";         # Path to the actual files. This should already be there
+$wgArticlePath = "/$1";  # Virtual path. This directory MUST be different from the one used in $wgScriptPath
 $wgUsePathInfo = true;        # Enable use of pretty URLs
 
 ## For more information on customizing the URLs please see:
