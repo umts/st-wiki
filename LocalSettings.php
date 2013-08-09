@@ -36,7 +36,7 @@ $wgSitename         = "Umass Transit ST Wiki";
 
 ## The URL base path to the directory containing the wiki;
 ## defaults for all runtime URL paths are based off of this.
-$wgScriptPath = "/direct";         # Path to the actual files. This should already be there
+$wgScriptPath = "";         # Path to the actual files. This should already be there
 $wgArticlePath = "/$1";  # Virtual path. This directory MUST be different from the one used in $wgScriptPath
 $wgUsePathInfo = true;        # Enable use of pretty URLs
 
@@ -302,6 +302,9 @@ $wgGroupPermissions['sysop']['passwordreset']   = true;
 
 $wgUseAjax = true;
 require_once("{$IP}/extensions/CategoryTree/CategoryTree.php");
+
+require_once ( "$IP/extensions/SecurePages/SecurePages.php" );
+$wgSecurePages = array(-1 => array( 'UserLogin', 'Preferences', 'ChangePassword'),);
 
 include 'Sensitive.php';
 ?>
