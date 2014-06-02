@@ -42,6 +42,8 @@ class SimpleCaptcha {
 			Xml::element( 'input', array(
 				'name' => 'wpCaptchaWord',
 				'id'   => 'wpCaptchaWord',
+				'size'  => 5,
+				'autocomplete' => 'off',
 				'tabindex' => 1 ) ) . // tab in before the edit textarea
 			"</p>\n" .
 			Xml::element( 'input', array(
@@ -181,7 +183,7 @@ class SimpleCaptcha {
 		if ( $wgCaptchaWhitelistIP ) {
 			global $wgRequest;
 
-			$ip = wfGetIP();
+			$ip = $wgRequest->getIP();
 
 			foreach ( $wgCaptchaWhitelistIP as $range ) {
 				if ( IP::isInRange( $ip, $range ) ) {
@@ -199,7 +201,7 @@ class SimpleCaptcha {
 	 */
 	function badLoginKey() {
 		global $wgRequest;
-		$ip = wfGetIP();
+		$ip = $wgRequest->getIP();
 		return wfMemcKey( 'captcha', 'badlogin', 'ip', $ip );
 	}
 
