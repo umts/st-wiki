@@ -58,8 +58,8 @@ $wgUploadDirectory  = "$IP/images";
 $wgEnableEmail      = true;
 $wgEnableUserEmail  = true;
 
-$wgEmergencyContact = "transit-mis@admin.umass.edu";
-$wgPasswordSender = "adam@admin.umass.edu";
+$wgEmergencyContact = "transit-it@admin.umass.edu";
+$wgPasswordSender = "adam@umass.edu";
 
 ## For a detailed description of the following switches see
 ## http://meta.wikimedia.org/Enotif and http://meta.wikimedia.org/Eauthent
@@ -266,9 +266,6 @@ $wgShowIPinHeader = false;
 //Added to support additional file types - adam 2007.01.18
 $wgFileExtensions = array( 'png', 'gif', 'emf', 'wmf', 'jpg', 'jpeg', 'pdf', 'svg');
 
-require_once( "$IP/extensions/WhoIsWatching/SpecialWhoIsWatching.php" );
-$wgPageShowWatchingUsers = true;
-
 require_once $IP.'/extensions/cite/Cite.php' ;	
 require_once( $IP.'/extensions/cite/SpecialCite.php' );
 require_once( "$IP/extensions/ParserFunctions/ParserFunctions.php" );
@@ -292,13 +289,6 @@ $wgGroupPermissions['bureaucrat' ]['requestips'] 	= true;
 require_once( "$IP/extensions/ConfirmEdit/ConfirmEdit.php" );
 require_once("$IP/extensions/ConfirmEdit/ReCaptcha.php");
 $wgCaptchaClass = 'ReCaptcha';
-
-//Newuserlog extension -1/3/08 -LB2
-require_once("$IP/extensions/Newuserlog/Newuserlog.php");
-
-//For the PasswordReset extensions - 1/3/08LB2
-require_once( "$IP/extensions/PasswordReset/PasswordReset.php" );
-$wgGroupPermissions['sysop']['passwordreset']   = true;
 
 $wgUseAjax = true;
 require_once("{$IP}/extensions/CategoryTree/CategoryTree.php");
