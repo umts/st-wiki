@@ -293,7 +293,7 @@ $wgCaptchaClass = 'ReCaptcha';
 $wgUseAjax = true;
 require_once("{$IP}/extensions/CategoryTree/CategoryTree.php");
 
-require_once ( "$IP/extensions/securepages/SecurePages.php" );
+require_once ( "$IP/extensions/SecurePages/SecurePages.php" );
 $wgSecurePages = array(-1 => array( 'UserLogin', 'Preferences', 'ChangePassword'),);
 
 include 'Sensitive.php';
