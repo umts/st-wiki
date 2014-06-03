@@ -17,7 +17,7 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 class SkinUMass extends SkinVector {
 
 	var $skinname = 'umass', $stylename = 'umass',
-		$template = 'UMassTemplate', $useHeadElement = true;
+		$template = 'VectorTemplate', $useHeadElement = true;
 
 	/**
 	 * Initializes output page and sets up skin-specific parameters
@@ -39,12 +39,4 @@ class SkinUMass extends SkinVector {
 		$styles = array( 'skins.umass' );
 		$out->addModuleStyles( $styles );
 	}
-}
-
-/**
- * QuickTemplate class for Vector skin
- * @ingroup Skins
- */
-class UMassTemplate extends VectorTemplate {
-
 }
