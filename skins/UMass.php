@@ -21,7 +21,7 @@ $wgExtensionMessagesFiles['UMass'] = dirname(__FILE__).'/UMass.i18n.php';
 
 $wgResourceModules['skins.umass'] = array(
   'styles' => array(
-    'umass/css/screen.css' => array( 'media' => 'screen' )
+    'umass/screen.css' => array( 'media' => 'screen' )
   ),
   'remoteBasePath' => &$GLOBALS['wgStylePath'],
   'localBasePath' => &$GLOBALS['wgStyleDirectory']
