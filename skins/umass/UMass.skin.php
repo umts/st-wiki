@@ -5,7 +5,6 @@
  * @file
  * @ingroup Skins
  */
-require_once( dirname(__FILE__) . '/../Vector.php' );
 
 /**
  * SkinTemplate class for UMass skin
@@ -17,11 +16,18 @@ class SkinUMass extends SkinVector {
   /**
    * @params $out OutputPage object
    */
+  function initPage( OutputPage $out ){
+    parent::initPage( $out );
+    $out->prependHTML( umassHead() );
+    $out->addHTML( umassFoot() );
+  }
+
+  /**
+   * @params $out OutputPage object
+   */
   function setupSkinUserCss( OutputPage $out ){
     parent::setupSkinUserCss( $out );
     $out->addModuleStyles( 'skins.umass' );
-    $out->prependHTML( umassHead() );
-    $out->addHTML( umassFoot() );
   }
 
   function umassHead(){
