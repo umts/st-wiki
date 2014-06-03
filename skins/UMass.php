@@ -16,8 +16,8 @@ $wgExtensionCredits['umass'][] = array (
 );
 
 $wgValidSkinNames['umass'] = "UMass";
-$wgAutoloadClasses['SkinUMass'] = dirname(__FILE__).'UMass.skin.php';
-$wgExtensionMessagesFiles['UMass'] = dirname(__FILE__).'UMass.i18n.php';
+$wgAutoloadClasses['SkinUMass'] = dirname(__FILE__).'/UMass.skin.php';
+$wgExtensionMessagesFiles['UMass'] = dirname(__FILE__).'/UMass.i18n.php';
 
 $wgResourceModules['skins.umass'] = array(
   'styles' => array(
