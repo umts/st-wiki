@@ -9,4 +9,10 @@ $wgResourceModules['skins.umass'] = array(
    'styles' => array( 'umass/screen.css' => array( 'media' => 'screen') ),
    'remoteBasePath' => $wgStylePath,
    'localBasePath' => $wgStyleDirectory,
-);
+ );
+
+$wgResourceModules['skins.umass.js'] = array(
+  'scripts' => array( 'umass/headroom.min.js', 'umass/custom.js' ),
+  'remoteBasePath' => $wgStylePath,
+  'localBasePath' => $wgStyleDirectory,
+ );

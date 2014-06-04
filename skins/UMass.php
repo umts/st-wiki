@@ -19,10 +19,13 @@ class SkinUMass extends SkinVector {
 	var $skinname = 'umass', $stylename = 'umass',
 		$template = 'UMassTemplate', $useHeadElement = true;
 
-	/**
-	 * Loads skin and user CSS files.
-	 * @param $out OutputPage object
-	 */
+  public function initPage( OutputPage $out ){
+    parent::initPage( $out );
+
+    $scripts = array( 'skins.umass.js' );
+    $out->addModules( $scripts );
+  }
+
 	function setupSkinUserCss( OutputPage $out ) {
 		parent::setupSkinUserCss( $out );
 
