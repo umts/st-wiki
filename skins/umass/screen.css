@@ -1,3 +1,19 @@
+#mv-navigation #mw-head {
+  top: 40px;
+}
+
+.skin-umass div#content {
+  margin-top: 39px;
+}
+
+#mw-panel #p-logo {
+  margin-top: 40px;
+}
+
+#mw-navigation #mw-panel.collapsible-nav .portal.first {
+  margin-top: 40px;
+}
+
 #topbanner {
   position: fixed;
   top: 0;
@@ -5,7 +21,7 @@
   text-align: right;
   padding: 8px 15px;
   background-color: #881c1c;
-  max-width: 100%;
+  width: 100%;
 }
 
 #topbanner a img{
@@ -16,7 +32,7 @@
 
 #topbanner form{
   margin: 0;
-  padding: 0;
+  padding: 0 25px;
   font-size: 11px;
 }
 
@@ -27,6 +43,7 @@
 #umass-footer{
   background: black;
   color: #BBB;
+  height: 40px;
 }
 
 #umass-footer p{
@@ -39,7 +56,7 @@
 }
 
 #umass-footer a {
-  border-bottom:1px solid #BBBBBB;
-  color:#881c1c;
+  color: #BBB;
+  border-bottom:1px solid #BBB;
   text-decoration:none;
 }
