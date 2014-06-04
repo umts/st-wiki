@@ -17,19 +17,7 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 class SkinUMass extends SkinVector {
 
 	var $skinname = 'umass', $stylename = 'umass',
-		$template = 'VectorTemplate', $useHeadElement = true;
-
-	/**
-	 * Initializes output page and sets up skin-specific parameters
-	 * @param $out OutputPage object to initialize
-	 */
-	public function initPage( OutputPage $out ) {
-		global $wgLocalStylePath;
-
-		parent::initPage( $out );
-	  $out->prependHTML( umassHead() );
-    $out->addHTML( umassFoot() );
-}
+		$template = 'UMassTemplate', $useHeadElement = true;
 
 	/**
 	 * Loads skin and user CSS files.
@@ -41,10 +29,11 @@ class SkinUMass extends SkinVector {
 		$styles = array( 'skins.umass' );
 		$out->addModuleStyles( $styles );
 	}
+}
 
-  function umassHead(){
-    return <<<HTML
-      <div id="topbanner">
+class UMassTemplate extends VectorTemplate {
+  public function execute() {
+    ?><div id="topbanner">
         <a href="http://umass.edu/">
           <img id="banner_wordmark" src="http://umass.edu/umhome/identity/top_banner_06/mar-wordmark.gif" alt="UMass Amherst">
         </a>
@@ -60,18 +49,15 @@ class SkinUMass extends SkinVector {
             <input name="output" value="xml_no_dtd" type="hidden">
           </div>
         </form>
-      </div>
-HTML;
-  }
+      </div><?php
 
-  function umassFoot(){
-  return <<<HTML
-    <div id='umass-footer'>
+    parent::execute();
+
+    ?><div id='umass-footer'>
       <p>&copy;&nbsp;2014 <a href="http://umass.edu/">University of Massachusetts Amherst</a>
          <span>&bull;</span> <a href="http://umass.edu/umhome/policies/">Site Policies</a>
          <span>&bull;</span> <a href="http://umass.edu/transit/">Site Contact</a>
       </p>
-    </div>
-HTML;
+      </div><?php
   }
 }
