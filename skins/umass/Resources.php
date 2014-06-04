@@ -13,8 +13,7 @@ $wgResourceModules['skins.umass'] = array(
 
 $wgResourceModules['skins.umass.js'] = array(
   'scripts' => array( 'umass/headroom.min.js',
-                      'umass/custom.js',
-                      'umass/jQuery.headroom.min.js' ),
+                      'umass/custom.js' )
   'remoteBasePath' => $wgStylePath,
   'localBasePath' => $wgStyleDirectory,
  );
