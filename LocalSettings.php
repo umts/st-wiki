@@ -46,7 +46,7 @@ $wgUsePathInfo = true;        # Enable use of pretty URLs
 $wgStylePath        = "$wgScriptPath/skins";
 $wgStyleDirectory   = "$IP/skins";
 require_once( "$IP/skins/umass/Resources.php" );
-//$wgDefaultSkin      = "umass";
+$wgDefaultSkin      = "umass";
 $wgLogo             = "$wgStylePath/common/images/st_logo.gif";
 $wgAllowUserCss     = true;
 
