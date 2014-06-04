@@ -1,3 +1,5 @@
 $('document').ready( function() {
-  $('#topbanner').headroom();
+  var topheader = document.querySelector('#topbanner');
+  var headroom = new Headroom( topheader );
+  headroom.init();
 });

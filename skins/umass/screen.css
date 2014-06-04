@@ -15,14 +15,26 @@
 }
 
 .headroom {
+  -webkit-transition: -webkit-transform 20ms linear;
+  -moz-transition: -moz-transform 20ms linear;
+  -ms-transition: -ms-transform 20ms linear;
+  -o-transition: -o-transform 20ms linear;
   transition: transform 20ms linear;
 }
 
 .headroom--pinned {
+  -webkit-transform: translateY(0%);
+  -moz-transform: translateY(0%);
+  -ms-transform: translateY(0%);
+  -o-transform: translateY(0%);
   transform: translateY(0%);
 }
 
 .headroom--unpinned {
+  -webkit-transform: translateY(-100%);
+  -moz-transform: translateY(-100%);
+  -ms-transform: translateY(-100%);
+  -o-transform: translateY(-100%);
   transform: translateY(-100%);
 }
 
